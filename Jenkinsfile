@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "NodeJS"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -10,35 +14,49 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                dir('my-app') {
+                    bat 'npm install'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
-                echo "Building the project..."
-                echo "Build stage completed"
+                dir('my-app') {
+                    echo "Building React app..."
+                    bat 'npm run build'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                echo "Running tests..."
-                echo "Test stage completed"
+                dir('my-app') {
+                    echo "Running tests..."
+                    bat 'npm test -- --watchAll=false --passWithNoTests'
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deploying the project..."
-                echo "Deploy stage completed"
+                dir('my-app') {
+                    echo "Deploying React app..."
+                    echo "React build is ready for deployment."
+                }
             }
         }
     }
 
     post {
         success {
-            echo "CI/CD Pipeline executed successfully!"
+            echo "React pipeline executed successfully!"
         }
 
         failure {
-            echo "CI/CD Pipeline failed!"
+            echo "React pipeline failed!"
         }
     }
 }
